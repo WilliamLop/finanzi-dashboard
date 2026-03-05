@@ -26,13 +26,13 @@ const DEFAULT_BUDGET = {
 }
 
 const TABS = [
-  { id: "resumen",      icon: "⬡",  label: "Resumen"      },
-  { id: "gastos",       icon: "↓",  label: "Gastos"       },
-  { id: "ingresos",     icon: "↑",  label: "Ingresos"     },
-  { id: "fuentes",      icon: "◎",  label: "Fuentes"      },
-  { id: "deudas",       icon: "◈",  label: "Deudas"       },
-  { id: "presupuesto",  icon: "◉",  label: "Presupuesto"  },
-  { id: "historial",    icon: "▦",  label: "Historial"    },
+  { id: "resumen",      label: "Resumen"      },
+  { id: "gastos",       label: "Gastos"       },
+  { id: "ingresos",     label: "Ingresos"     },
+  { id: "fuentes",      label: "Fuentes"      },
+  { id: "deudas",       label: "Deudas"       },
+  { id: "presupuesto",  label: "Presupuesto"  },
+  { id: "historial",    label: "Historial"    },
 ]
 
 export default function App() {
@@ -291,7 +291,9 @@ export default function App() {
         <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {TABS.map(t => (
             <button key={t.id} className={`nav-item ${tab === t.id ? "active" : ""}`} onClick={() => setTab(t.id)}>
-              <span style={{ fontSize: 16, width: 20, textAlign: "center" }}>{t.icon}</span>
+              <span style={{ width: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <TabIcon id={t.id} size={16} />
+              </span>
               {t.label}
             </button>
           ))}
@@ -310,7 +312,7 @@ export default function App() {
       <div className="main-content" style={S.main}>
 
         {/* TOPBAR */}
-        <div style={S.topbar}>
+        <div style={S.topbar} className="topbar-inner">
           <div>
             <div style={{ fontSize: 16, fontWeight: 700, color: "#F1F5F9" }}>{MONTHS[month]} {year}</div>
             <div style={{ fontSize: 12, color: "#475569" }}>
@@ -329,7 +331,7 @@ export default function App() {
 
         {/* TOAST */}
         {toast && (
-          <div style={{
+          <div className="toast-msg" style={{
             position: "fixed", bottom: 24, right: 24, zIndex: 999,
             background: toast.type === "ok" ? "linear-gradient(135deg,#059669,#10B981)" : "linear-gradient(135deg,#DC2626,#EF4444)",
             color: "#fff", padding: "12px 20px", borderRadius: 12, fontSize: 14, fontWeight: 600,
@@ -341,7 +343,7 @@ export default function App() {
 
         {/* PAY ALERT */}
         {payAlerts.length > 0 && (
-          <div style={{ margin: "0 28px", marginTop: 20, padding: "12px 16px", borderRadius: 12, background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="pay-alert" style={{ margin: "0 28px", marginTop: 20, padding: "12px 16px", borderRadius: 12, background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 20 }}>🔔</span>
             <div>
               <div style={{ fontWeight: 700, fontSize: 13, color: "#A5B4FC" }}>Hoy es día de pago</div>
@@ -353,7 +355,7 @@ export default function App() {
         )}
 
         {/* KPI CARDS */}
-        <div style={{ display: "flex", gap: 14, padding: "20px 28px 0", flexWrap: "wrap" }}>
+        <div className="kpi-row">
           <KpiCard label="Ingresos totales" value={COP(totalIncome)} color="#10B981" icon="↑" sub={`Q1 ${COP(q1Inc)} · Q2 ${COP(q2Inc)}`} />
           <KpiCard label="Gastos totales"   value={COP(totalSpent)}  color={over(totalSpent, totalBudget) ? "#EF4444" : "#F59E0B"} icon="↓"
             sub={totalBudget > 0 ? `${Math.round(pct(totalSpent, totalBudget))}% del presupuesto` : "Sin presupuesto definido"} />
@@ -364,11 +366,11 @@ export default function App() {
         </div>
 
         {/* CONTENT */}
-        <div style={S.content} className="fade-in">
+        <div className="fade-in content-area tab-content">
 
           {/* ── RESUMEN ── */}
           {tab === "resumen" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <div className="grid-2" style={{ gap: 20 }}>
 
               {/* Balance card */}
               <div style={{ ...S.card, background: balance >= 0 ? "linear-gradient(135deg,rgba(16,185,129,0.1),rgba(5,150,105,0.05))" : "linear-gradient(135deg,rgba(239,68,68,0.1),rgba(185,28,28,0.05))", borderColor: balance >= 0 ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)", gridColumn: "1/-1" }}>
@@ -448,7 +450,7 @@ export default function App() {
 
           {/* ── GASTOS ── */}
           {tab === "gastos" && (
-            <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: 20 }}>
+            <div className="grid-form-sidebar">
               <div>
                 <div style={S.card}>
                   <div className="section-title">Nuevo gasto</div>
@@ -523,7 +525,7 @@ export default function App() {
 
           {/* ── INGRESOS ── */}
           {tab === "ingresos" && (
-            <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: 20 }}>
+            <div className="grid-form-sidebar">
               <div style={S.card}>
                 <div className="section-title">Registrar ingreso</div>
                 {sources.length === 0
@@ -590,7 +592,7 @@ export default function App() {
 
           {/* ── FUENTES ── */}
           {tab === "fuentes" && (
-            <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: 20 }}>
+            <div className="grid-form-sidebar">
               <div style={S.card}>
                 <div className="section-title">Nueva fuente</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -656,7 +658,7 @@ export default function App() {
 
           {/* ── DEUDAS ── */}
           {tab === "deudas" && (
-            <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: 20 }}>
+            <div className="grid-form-sidebar">
               <div>
                 <div style={S.card}>
                   <div className="section-title">Nueva deuda</div>
@@ -752,7 +754,7 @@ export default function App() {
 
           {/* ── PRESUPUESTO ── */}
           {tab === "presupuesto" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, maxWidth: 820 }}>
+            <div className="grid-2" style={{ gap: 20, maxWidth: 820 }}>
               <div style={S.card}>
                 <div className="section-title">Presupuesto del mes</div>
                 <div style={{ fontSize: 12, color: "#475569", marginBottom: 12 }}>¿Cuánto puedes gastar en total este mes?</div>
@@ -851,9 +853,9 @@ export default function App() {
                   return (
                     <div key={i} className="row-item">
                       <span style={{ fontWeight: 700, fontSize: 14, width: 50, color: "#94A3B8" }}>{d.name}</span>
-                      <span style={{ fontSize: 13, color: "#6366F1", fontWeight: 600 }}>{COP(d.ingresos)}</span>
-                      <span style={{ fontSize: 13, color: "#EF4444", fontWeight: 600 }}>{COP(d.gastos)}</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: bal >= 0 ? "#10B981" : "#EF4444" }}>{COP(bal)}</span>
+                      <span className="hist-table-amount" style={{ fontSize: 13, color: "#6366F1", fontWeight: 600 }}>{COP(d.ingresos)}</span>
+                      <span className="hist-table-amount" style={{ fontSize: 13, color: "#EF4444", fontWeight: 600 }}>{COP(d.gastos)}</span>
+                      <span className="hist-table-amount" style={{ fontSize: 13, fontWeight: 700, color: bal >= 0 ? "#10B981" : "#EF4444" }}>{COP(bal)}</span>
                     </div>
                   )
                 })}
@@ -863,16 +865,17 @@ export default function App() {
 
         </div>
 
-        {/* MOBILE TABS */}
-        <div className="mobile-tabs" style={{ display: "none", position: "fixed", bottom: 0, left: 0, right: 0, background: "#0D1117", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "8px 0", zIndex: 10, justifyContent: "space-around" }}>
+        {/* MOBILE NAV */}
+        <nav className="mobile-nav">
           {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2, padding: "4px 8px", color: tab === t.id ? "#6366F1" : "#475569" }}>
-              <span style={{ fontSize: 18 }}>{t.icon}</span>
-              <span style={{ fontSize: 9, fontWeight: 600 }}>{t.label}</span>
+            <button key={t.id} onClick={() => setTab(t.id)} className={`mobile-nav-btn${tab === t.id ? " active" : ""}`}>
+              <div className="mobile-nav-icon">
+                <TabIcon id={t.id} size={20} />
+              </div>
+              <span className="mobile-nav-label">{t.label}</span>
             </button>
           ))}
-        </div>
+        </nav>
       </div>
     </div>
   )
@@ -880,13 +883,35 @@ export default function App() {
 
 function KpiCard({ label, value, color, icon, sub }) {
   return (
-    <div className="kpi-card" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "16px 20px", flex: 1, minWidth: 150, position: "relative", overflow: "hidden" }}>
+    <div className="kpi-card">
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: color }} />
-      <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 800, color, letterSpacing: "-0.02em" }}>{value}</div>
-      {sub && <div style={{ fontSize: 11, color: "#334155", marginTop: 4 }}>{sub}</div>}
+      <div className="kpi-label" style={{ fontSize: 10, color: "#475569", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
+      <div className="kpi-value" style={{ fontSize: 22, fontWeight: 800, color, letterSpacing: "-0.02em" }}>{value}</div>
+      {sub && <div className="kpi-sub" style={{ fontSize: 11, color: "#334155", marginTop: 4 }}>{sub}</div>}
     </div>
   )
+}
+
+function TabIcon({ id, size = 20 }) {
+  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" }
+  switch (id) {
+    case "resumen":
+      return <svg {...p}><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+    case "gastos":
+      return <svg {...p}><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    case "ingresos":
+      return <svg {...p}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    case "fuentes":
+      return <svg {...p}><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+    case "deudas":
+      return <svg {...p}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    case "presupuesto":
+      return <svg {...p}><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
+    case "historial":
+      return <svg {...p}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    default:
+      return null
+  }
 }
 
 function Empty({ text, icon }) {
