@@ -319,7 +319,7 @@ export default function App() {
               {loading ? "Actualizando..." : `${expenses.length} gastos · ${incomes.length} ingresos`}
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div className="topbar-right" style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <select value={month} onChange={e => setMonth(+e.target.value)}
               style={{ ...S.inp, width: "auto", padding: "7px 12px", fontSize: 13 }}>
               {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
