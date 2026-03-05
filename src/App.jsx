@@ -57,6 +57,13 @@ export default function App() {
   const [toast, setToast] = useState(null)
   const toastRef = useRef()
 
+  const [theme, setTheme] = useState(() => localStorage.getItem("finanzi-theme") || "dark")
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme)
+    localStorage.setItem("finanzi-theme", theme)
+  }, [theme])
+  const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark")
+
   const showToast = (msg, type = "ok") => {
     setToast({ msg, type })
     clearTimeout(toastRef.current)
@@ -247,15 +254,14 @@ export default function App() {
   // ── Styles ─────────────────────────────────────────────────────────────────
 
   const S = {
-    layout:   { display: "flex", minHeight: "100vh", background: "#07090F" },
-    sidebar:  { width: 220, background: "#0D1117", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", padding: "24px 12px", position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 10 },
+    layout:   { display: "flex", minHeight: "100vh", background: "var(--bg)" },
+    sidebar:  { width: 220, background: "var(--bg2)", borderRight: "1px solid var(--sidebar-bdr)", display: "flex", flexDirection: "column", padding: "24px 12px", position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 10 },
     main:     { marginLeft: 220, flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" },
-    topbar:   { background: "rgba(13,17,23,0.8)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 9 },
-    content:  { padding: 28, flex: 1 },
-    card:     { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: 20 },
-    inp:      { width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px", color: "#F1F5F9", fontSize: 14, outline: "none", fontFamily: "inherit" },
+    topbar:   { background: "var(--topbar-bg)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid var(--card-border)", padding: "14px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 9 },
+    card:     { background: "var(--card)", border: "1px solid var(--card-border)", borderRadius: 16, padding: 20, boxShadow: "var(--shadow-card)" },
+    inp:      { width: "100%", background: "var(--input-bg)", border: "1px solid var(--card-border)", borderRadius: 10, padding: "10px 14px", color: "var(--text)", fontSize: 14, outline: "none", fontFamily: "inherit" },
     btnPrim:  { background: "linear-gradient(135deg,#6366F1,#8B5CF6)", border: "none", borderRadius: 10, color: "#fff", fontWeight: 600, fontSize: 14, padding: "11px 0", cursor: "pointer", width: "100%", fontFamily: "inherit" },
-    label:    { fontSize: 11, color: "#64748B", marginBottom: 5, fontWeight: 600, letterSpacing: "0.05em" },
+    label:    { fontSize: 11, color: "var(--sub)", marginBottom: 5, fontWeight: 600, letterSpacing: "0.05em" },
     grid2:    { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 },
     grid3:    { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 },
   }
@@ -263,8 +269,8 @@ export default function App() {
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null
     return (
-      <div style={{ background: "#161B27", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "10px 14px" }}>
-        <div style={{ fontSize: 12, color: "#64748B", marginBottom: 6 }}>{label}</div>
+      <div style={{ background: "var(--bg3)", border: "1px solid var(--card-border)", borderRadius: 10, padding: "10px 14px" }}>
+        <div style={{ fontSize: 12, color: "var(--sub)", marginBottom: 6 }}>{label}</div>
         {payload.map((p, i) => (
           <div key={i} style={{ fontSize: 13, color: p.color, fontWeight: 600 }}>{p.name}: {COP(p.value)}</div>
         ))}
@@ -283,10 +289,10 @@ export default function App() {
           <div style={{ fontSize: 18, fontWeight: 800, background: "linear-gradient(135deg,#6366F1,#EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Finanzi
           </div>
-          <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>Panel de finanzas</div>
+          <div style={{ fontSize: 11, color: "var(--sub)", marginTop: 2 }}>Panel de finanzas</div>
         </div>
 
-        <div style={{ fontSize: 10, color: "#334155", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>Navegación</div>
+        <div style={{ fontSize: 10, color: "var(--muted)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, paddingLeft: 4 }}>Navegación</div>
 
         <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {TABS.map(t => (
@@ -299,11 +305,11 @@ export default function App() {
           ))}
         </nav>
 
-        <div style={{ marginTop: "auto", padding: "16px 4px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-          <div style={{ fontSize: 11, color: "#334155" }}>Conectado a Supabase</div>
+        <div style={{ marginTop: "auto", padding: "16px 4px 0", borderTop: "1px solid var(--sidebar-bdr)" }}>
+          <div style={{ fontSize: 11, color: "var(--muted)" }}>Conectado a Supabase</div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981" }} />
-            <span style={{ fontSize: 12, color: "#64748B" }}>Sincronizado</span>
+            <span style={{ fontSize: 12, color: "var(--sub)" }}>Sincronizado</span>
           </div>
         </div>
       </aside>
@@ -314,12 +320,15 @@ export default function App() {
         {/* TOPBAR */}
         <div style={S.topbar} className="topbar-inner">
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#F1F5F9" }}>{MONTHS[month]} {year}</div>
-            <div style={{ fontSize: 12, color: "#475569" }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)" }}>{MONTHS[month]} {year}</div>
+            <div style={{ fontSize: 12, color: "var(--sub)" }}>
               {loading ? "Actualizando..." : `${expenses.length} gastos · ${incomes.length} ingresos`}
             </div>
           </div>
           <div className="topbar-right" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <button onClick={toggleTheme} className="theme-toggle" title={theme === "dark" ? "Modo claro" : "Modo oscuro"}>
+              <ThemeIcon theme={theme} size={18} />
+            </button>
             <select value={month} onChange={e => setMonth(+e.target.value)}
               style={{ ...S.inp, width: "auto", padding: "7px 12px", fontSize: 13 }}>
               {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
@@ -347,7 +356,7 @@ export default function App() {
             <span style={{ fontSize: 20 }}>🔔</span>
             <div>
               <div style={{ fontWeight: 700, fontSize: 13, color: "#A5B4FC" }}>Hoy es día de pago</div>
-              <div style={{ fontSize: 12, color: "#64748B" }}>
+              <div style={{ fontSize: 12, color: "var(--sub)" }}>
                 {payAlerts.map(s => s.name).join(", ")}
               </div>
             </div>
@@ -374,9 +383,9 @@ export default function App() {
 
               {/* Balance card */}
               <div style={{ ...S.card, background: balance >= 0 ? "linear-gradient(135deg,rgba(16,185,129,0.1),rgba(5,150,105,0.05))" : "linear-gradient(135deg,rgba(239,68,68,0.1),rgba(185,28,28,0.05))", borderColor: balance >= 0 ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)", gridColumn: "1/-1" }}>
-                <div style={{ fontSize: 12, color: "#64748B", marginBottom: 4 }}>Balance del mes · {MONTHS[month]} {year}</div>
+                <div style={{ fontSize: 12, color: "var(--sub)", marginBottom: 4 }}>Balance del mes · {MONTHS[month]} {year}</div>
                 <div style={{ fontSize: 42, fontWeight: 800, color: balance >= 0 ? "#10B981" : "#EF4444", letterSpacing: "-0.02em" }}>{COP(balance)}</div>
-                <div style={{ fontSize: 13, color: "#64748B", marginTop: 4 }}>{balance >= 0 ? "✅ Vas bien con tus finanzas" : "⚠️ Revisa tus gastos este mes"}</div>
+                <div style={{ fontSize: 13, color: "var(--sub)", marginTop: 4 }}>{balance >= 0 ? "✅ Vas bien con tus finanzas" : "⚠️ Revisa tus gastos este mes"}</div>
               </div>
 
               {/* Pie chart */}
@@ -389,7 +398,7 @@ export default function App() {
                         {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
                       </Pie>
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: 12, color: "#64748B" }} />
+                      <Legend wrapperStyle={{ fontSize: 12, color: "var(--sub)" }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -403,9 +412,9 @@ export default function App() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <span style={{ fontSize: 15 }}>{CAT_ICONS[ci]}</span>
-                        <span style={{ fontSize: 13, color: "#94A3B8" }}>{cat}</span>
+                        <span style={{ fontSize: 13, color: "var(--text2)" }}>{cat}</span>
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: over(totByCat[cat], budgetByCat[cat]) ? "#EF4444" : "#F1F5F9" }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: over(totByCat[cat], budgetByCat[cat]) ? "#EF4444" : "var(--text)" }}>
                         {COP(totByCat[cat])}
                       </span>
                     </div>
@@ -416,13 +425,13 @@ export default function App() {
                     )}
                   </div>
                 ))}
-                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12, marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
+                <div style={{ borderTop: "1px solid var(--divider)", paddingTop: 12, marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
-                    <span style={{ color: "#64748B" }}>Total ingresos</span>
+                    <span style={{ color: "var(--sub)" }}>Total ingresos</span>
                     <span style={{ color: "#10B981" }}>{COP(totalIncome)}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
-                    <span style={{ color: "#64748B" }}>Total gastos</span>
+                    <span style={{ color: "var(--sub)" }}>Total gastos</span>
                     <span style={{ color: "#F59E0B" }}>{COP(totalSpent)}</span>
                   </div>
                 </div>
@@ -433,7 +442,7 @@ export default function App() {
                 <div style={S.card}>
                   <div className="section-title">Meta de ahorro</div>
                   <div style={{ fontSize: 28, fontWeight: 800, color: "#6366F1", marginBottom: 4 }}>{Math.round(savingPct)}%</div>
-                  <div style={{ fontSize: 12, color: "#64748B", marginBottom: 12 }}>{COP(actualSaving)} de {COP(savingGoal)}</div>
+                  <div style={{ fontSize: 12, color: "var(--sub)", marginBottom: 12 }}>{COP(actualSaving)} de {COP(savingGoal)}</div>
                   <div className="progress-bar" style={{ height: 10 }}>
                     <div className="progress-fill" style={{ width: `${savingPct}%`, background: "linear-gradient(90deg,#6366F1,#8B5CF6)" }} />
                   </div>
@@ -441,7 +450,7 @@ export default function App() {
               )}
 
               <div style={{ gridColumn: "1/-1" }}>
-                <button onClick={exportCSV} style={{ ...S.btnPrim, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "#94A3B8" }}>
+                <button onClick={exportCSV} style={{ ...S.btnPrim, background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--text2)" }}>
                   📤 Exportar resumen a CSV
                 </button>
               </div>
@@ -490,7 +499,7 @@ export default function App() {
                             <div style={{ width: 32, height: 32, borderRadius: 8, background: `${COLORS[ci]}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{CAT_ICONS[ci]}</div>
                             <div>
                               <div style={{ fontWeight: 700, fontSize: 14 }}>{cat}</div>
-                              <div style={{ fontSize: 11, color: "#475569" }}>{catExp.length} gasto{catExp.length !== 1 ? "s" : ""}</div>
+                              <div style={{ fontSize: 11, color: "var(--sub)" }}>{catExp.length} gasto{catExp.length !== 1 ? "s" : ""}</div>
                             </div>
                           </div>
                           <div style={{ fontWeight: 800, fontSize: 16, color: over(totByCat[cat], budgetByCat[cat]) ? "#EF4444" : COLORS[ci] }}>
@@ -502,12 +511,12 @@ export default function App() {
                             <div className="progress-bar">
                               <div className="progress-fill" style={{ width: `${pct(totByCat[cat], budgetByCat[cat])}%`, background: over(totByCat[cat], budgetByCat[cat]) ? "#EF4444" : COLORS[ci] }} />
                             </div>
-                            <div style={{ fontSize: 11, color: "#475569", marginTop: 4 }}>{Math.round(pct(totByCat[cat], budgetByCat[cat]))}% de {COP(budgetByCat[cat])}</div>
+                            <div style={{ fontSize: 11, color: "var(--sub)", marginTop: 4 }}>{Math.round(pct(totByCat[cat], budgetByCat[cat]))}% de {COP(budgetByCat[cat])}</div>
                           </div>
                         )}
                         {catExp.map(e => (
                           <div key={e.id} className="row-item">
-                            <span style={{ fontSize: 13, color: "#94A3B8" }}>{e.description}</span>
+                            <span style={{ fontSize: 13, color: "var(--text2)" }}>{e.description}</span>
                             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                               <span style={{ fontSize: 13, fontWeight: 600 }}>{COP(e.amount)}</span>
                               <button onClick={() => deleteExpense(e.id)}
@@ -529,7 +538,7 @@ export default function App() {
               <div style={S.card}>
                 <div className="section-title">Registrar ingreso</div>
                 {sources.length === 0
-                  ? <div style={{ color: "#475569", fontSize: 13 }}>Primero agrega una fuente en Fuentes.</div>
+                  ? <div style={{ color: "var(--sub)", fontSize: 13 }}>Primero agrega una fuente en Fuentes.</div>
                   : <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     <div>
                       <div style={S.label}>FUENTE</div>
@@ -564,16 +573,16 @@ export default function App() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                         <div>
                           <div style={{ fontWeight: 700, fontSize: 14 }}>{label}</div>
-                          <div style={{ fontSize: 12, color: "#475569" }}>Días {q === "1" ? "1 al 15" : "16 al fin"} del mes</div>
+                          <div style={{ fontSize: 12, color: "var(--sub)" }}>Días {q === "1" ? "1 al 15" : "16 al fin"} del mes</div>
                         </div>
                         <div style={{ fontSize: 20, fontWeight: 800, color }}>{COP(qTot)}</div>
                       </div>
-                      {!qInc.length ? <div style={{ color: "#334155", fontSize: 13 }}>Sin ingresos en esta quincena.</div>
+                      {!qInc.length ? <div style={{ color: "var(--muted)", fontSize: 13 }}>Sin ingresos en esta quincena.</div>
                         : qInc.map(i => (
                           <div key={i.id} className="row-item">
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <div style={{ width: 8, height: 8, borderRadius: "50%", background: color }} />
-                              <span style={{ fontSize: 13, color: "#94A3B8" }}>{i.sources?.name || "—"}</span>
+                              <span style={{ fontSize: 13, color: "var(--text2)" }}>{i.sources?.name || "—"}</span>
                             </div>
                             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                               <span style={{ fontSize: 13, fontWeight: 600, color }}>{COP(i.amount)}</span>
@@ -621,7 +630,7 @@ export default function App() {
                     const isPayDay  = s.day_q1 === now.getDate() || s.day_q2 === now.getDate()
                     const color     = COLORS[si % 5]
                     return (
-                      <div key={s.id} style={{ ...S.card, borderColor: isPayDay ? "rgba(99,102,241,0.4)" : "rgba(255,255,255,0.07)" }}>
+                      <div key={s.id} style={{ ...S.card, borderColor: isPayDay ? "rgba(99,102,241,0.4)" : "var(--card-border)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                             <div style={{ width: 42, height: 42, borderRadius: 10, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>💼</div>
@@ -630,15 +639,15 @@ export default function App() {
                                 {isPayDay && <span style={{ marginRight: 6, fontSize: 13 }}>🔔</span>}
                                 {s.name}
                               </div>
-                              <div style={{ fontSize: 12, color: "#475569", marginTop: 2 }}>Q1: día {s.day_q1} · Q2: día {s.day_q2}</div>
-                              {s.expected > 0 && <div style={{ fontSize: 12, color: "#475569" }}>Esperado: {COP(s.expected)} / quincena</div>}
+                              <div style={{ fontSize: 12, color: "var(--sub)", marginTop: 2 }}>Q1: día {s.day_q1} · Q2: día {s.day_q2}</div>
+                              {s.expected > 0 && <div style={{ fontSize: 12, color: "var(--sub)" }}>Esperado: {COP(s.expected)} / quincena</div>}
                             </div>
                           </div>
                           <div style={{ textAlign: "right" }}>
                             <div style={{ fontSize: 16, fontWeight: 800, color: "#10B981" }}>{COP(earned)}</div>
-                            <div style={{ fontSize: 11, color: "#334155" }}>este mes</div>
+                            <div style={{ fontSize: 11, color: "var(--muted)" }}>este mes</div>
                             <button onClick={() => deleteSource(s.id)}
-                              style={{ background: "none", border: "none", color: "#475569", cursor: "pointer", fontSize: 12, marginTop: 4 }}>Eliminar</button>
+                              style={{ background: "none", border: "none", color: "var(--sub)", cursor: "pointer", fontSize: 12, marginTop: 4 }}>Eliminar</button>
                           </div>
                         </div>
                         {s.expected > 0 && (
@@ -680,7 +689,7 @@ export default function App() {
                       <div style={S.label}>VALOR CUOTA MENSUAL (COP)</div>
                       <input type="number" placeholder="ej: 157.629" value={debtForm.monthly_payment}
                         onChange={e => setDebtForm(f => ({ ...f, monthly_payment: e.target.value }))} style={S.inp} />
-                      <div style={{ fontSize: 11, color: "#475569", marginTop: 4 }}>Si no lo sabes, se calcula automáticamente de total ÷ cuotas</div>
+                      <div style={{ fontSize: 11, color: "var(--sub)", marginTop: 4 }}>Si no lo sabes, se calcula automáticamente de total ÷ cuotas</div>
                     </div>
                     <div>
                       <div style={S.label}>FECHA LÍMITE (OPCIONAL)</div>
@@ -691,9 +700,9 @@ export default function App() {
                 </div>
                 {debts.length > 0 && (
                   <div style={{ ...S.card, marginTop: 14, background: "rgba(236,72,153,0.06)", borderColor: "rgba(236,72,153,0.2)" }}>
-                    <div style={{ fontSize: 12, color: "#94A3B8" }}>Compromiso mensual total</div>
+                    <div style={{ fontSize: 12, color: "var(--text2)" }}>Compromiso mensual total</div>
                     <div style={{ fontSize: 26, fontWeight: 800, color: "#EC4899", marginTop: 4 }}>{COP(totalDebtMonth)}</div>
-                    <div style={{ fontSize: 12, color: "#475569", marginTop: 2 }}>Suma de todas las cuotas activas</div>
+                    <div style={{ fontSize: 12, color: "var(--sub)", marginTop: 2 }}>Suma de todas las cuotas activas</div>
                   </div>
                 )}
               </div>
@@ -706,23 +715,23 @@ export default function App() {
                     const remaining = d.installments - d.paid
                     const isDone    = d.paid >= d.installments
                     return (
-                      <div key={d.id} style={{ ...S.card, borderColor: isDone ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.07)" }}>
+                      <div key={d.id} style={{ ...S.card, borderColor: isDone ? "rgba(16,185,129,0.3)" : "var(--card-border)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
                           <div>
                             <div style={{ fontWeight: 700, fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}>
                               <span>{isDone ? "✅" : "💳"}</span> {d.name}
                             </div>
-                            <div style={{ fontSize: 12, color: "#64748B", marginTop: 4 }}>
+                            <div style={{ fontSize: 12, color: "var(--sub)", marginTop: 4 }}>
                               Total: {COP(d.total)} · Cuota: {COP(instAmt)}/mes
                             </div>
-                            {d.due_date && <div style={{ fontSize: 12, color: "#64748B" }}>📅 Vence: {d.due_date}</div>}
+                            {d.due_date && <div style={{ fontSize: 12, color: "var(--sub)" }}>📅 Vence: {d.due_date}</div>}
                           </div>
                           <button onClick={() => deleteDebt(d.id)}
-                            style={{ background: "none", border: "none", color: "#334155", cursor: "pointer", fontSize: 12 }}>Eliminar</button>
+                            style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", fontSize: 12 }}>Eliminar</button>
                         </div>
 
                         <div style={{ marginBottom: 10 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748B", marginBottom: 6 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--sub)", marginBottom: 6 }}>
                             <span>{d.paid} cuotas pagadas</span>
                             <span style={{ fontWeight: 700, color: isDone ? "#10B981" : "#EC4899" }}>{Math.round(dpct)}%</span>
                           </div>
@@ -737,12 +746,12 @@ export default function App() {
                           {isDone && <div style={{ fontSize: 12, color: "#10B981", marginTop: 6, fontWeight: 600 }}>¡Deuda saldada! 🎉</div>}
                         </div>
 
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 12 }}>
-                          <span style={{ fontSize: 12, color: "#475569" }}>Cuotas pagadas:</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, borderTop: "1px solid var(--divider)", paddingTop: 12 }}>
+                          <span style={{ fontSize: 12, color: "var(--sub)" }}>Cuotas pagadas:</span>
                           <input type="number" min="0" max={d.installments} value={d.paid}
                             onChange={e => updateDebtPaid(d.id, e.target.value)}
                             style={{ ...S.inp, width: 80, padding: "6px 10px", fontSize: 13 }} />
-                          <span style={{ fontSize: 12, color: "#334155" }}>de {d.installments}</span>
+                          <span style={{ fontSize: 12, color: "var(--muted)" }}>de {d.installments}</span>
                         </div>
                       </div>
                     )
@@ -757,13 +766,13 @@ export default function App() {
             <div className="grid-2" style={{ gap: 20, maxWidth: 820 }}>
               <div style={S.card}>
                 <div className="section-title">Presupuesto del mes</div>
-                <div style={{ fontSize: 12, color: "#475569", marginBottom: 12 }}>¿Cuánto puedes gastar en total este mes?</div>
+                <div style={{ fontSize: 12, color: "var(--sub)", marginBottom: 12 }}>¿Cuánto puedes gastar en total este mes?</div>
                 <input type="number" placeholder="ej: 3.000.000" value={budget.total_budget || ""}
                   onChange={e => updateBudget("total_budget", e.target.value)} style={S.inp} />
                 {totalBudget > 0 && (
                   <div style={{ marginTop: 16 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                      <span style={{ color: "#64748B" }}>Gastado</span>
+                      <span style={{ color: "var(--sub)" }}>Gastado</span>
                       <span style={{ fontWeight: 700, color: over(totalSpent, totalBudget) ? "#EF4444" : "#10B981" }}>
                         {Math.round(pct(totalSpent, totalBudget))}%
                       </span>
@@ -771,20 +780,20 @@ export default function App() {
                     <div className="progress-bar" style={{ height: 10 }}>
                       <div className="progress-fill" style={{ width: `${pct(totalSpent, totalBudget)}%`, background: over(totalSpent, totalBudget) ? "#EF4444" : "linear-gradient(90deg,#6366F1,#10B981)" }} />
                     </div>
-                    <div style={{ fontSize: 12, color: "#475569", marginTop: 6 }}>{COP(totalSpent)} de {COP(totalBudget)}</div>
+                    <div style={{ fontSize: 12, color: "var(--sub)", marginTop: 6 }}>{COP(totalSpent)} de {COP(totalBudget)}</div>
                   </div>
                 )}
               </div>
 
               <div style={S.card}>
                 <div className="section-title">Meta de ahorro</div>
-                <div style={{ fontSize: 12, color: "#475569", marginBottom: 12 }}>¿Cuánto quieres ahorrar este mes?</div>
+                <div style={{ fontSize: 12, color: "var(--sub)", marginBottom: 12 }}>¿Cuánto quieres ahorrar este mes?</div>
                 <input type="number" placeholder="ej: 500.000" value={budget.saving_goal || ""}
                   onChange={e => updateBudget("saving_goal", e.target.value)} style={S.inp} />
                 {savingGoal > 0 && (
                   <div style={{ marginTop: 16 }}>
                     <div style={{ fontSize: 28, fontWeight: 800, color: "#6366F1" }}>{Math.round(savingPct)}%</div>
-                    <div style={{ fontSize: 12, color: "#475569" }}>{COP(actualSaving)} ahorrado de {COP(savingGoal)}</div>
+                    <div style={{ fontSize: 12, color: "var(--sub)" }}>{COP(actualSaving)} ahorrado de {COP(savingGoal)}</div>
                     <div className="progress-bar" style={{ marginTop: 8, height: 8 }}>
                       <div className="progress-fill" style={{ width: `${savingPct}%`, background: "linear-gradient(90deg,#6366F1,#8B5CF6)" }} />
                     </div>
@@ -828,11 +837,11 @@ export default function App() {
                           <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                      <XAxis dataKey="name" tick={{ fill: "#475569", fontSize: 12 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: "#475569", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => "$" + (v / 1000).toFixed(0) + "k"} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--divider)" />
+                      <XAxis dataKey="name" tick={{ fill: "var(--sub)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fill: "var(--sub)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => "$" + (v / 1000).toFixed(0) + "k"} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: 12, color: "#64748B" }} />
+                      <Legend wrapperStyle={{ fontSize: 12, color: "var(--sub)" }} />
                       <Area type="monotone" dataKey="ingresos" stroke="#6366F1" strokeWidth={2} fill="url(#gi)" name="Ingresos" />
                       <Area type="monotone" dataKey="gastos"   stroke="#EF4444" strokeWidth={2} fill="url(#gg)"  name="Gastos" />
                     </AreaChart>
@@ -842,7 +851,7 @@ export default function App() {
 
               <div style={S.card}>
                 <div className="section-title">Detalle por mes</div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#334155", marginBottom: 10, paddingBottom: 8, borderBottom: "1px solid rgba(255,255,255,0.05)", fontWeight: 700, letterSpacing: "0.05em" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--muted)", marginBottom: 10, paddingBottom: 8, borderBottom: "1px solid var(--divider)", fontWeight: 700, letterSpacing: "0.05em" }}>
                   <span style={{ width: 50 }}>MES</span>
                   <span style={{ color: "#6366F1" }}>INGRESOS</span>
                   <span style={{ color: "#EF4444" }}>GASTOS</span>
@@ -852,7 +861,7 @@ export default function App() {
                   const bal = d.ingresos - d.gastos
                   return (
                     <div key={i} className="row-item">
-                      <span style={{ fontWeight: 700, fontSize: 14, width: 50, color: "#94A3B8" }}>{d.name}</span>
+                      <span style={{ fontWeight: 700, fontSize: 14, width: 50, color: "var(--text2)" }}>{d.name}</span>
                       <span className="hist-table-amount" style={{ fontSize: 13, color: "#6366F1", fontWeight: 600 }}>{COP(d.ingresos)}</span>
                       <span className="hist-table-amount" style={{ fontSize: 13, color: "#EF4444", fontWeight: 600 }}>{COP(d.gastos)}</span>
                       <span className="hist-table-amount" style={{ fontSize: 13, fontWeight: 700, color: bal >= 0 ? "#10B981" : "#EF4444" }}>{COP(bal)}</span>
@@ -885,9 +894,9 @@ function KpiCard({ label, value, color, icon, sub }) {
   return (
     <div className="kpi-card">
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: color }} />
-      <div className="kpi-label" style={{ fontSize: 10, color: "#475569", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
+      <div className="kpi-label" style={{ fontSize: 10, color: "var(--sub)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
       <div className="kpi-value" style={{ fontSize: 22, fontWeight: 800, color, letterSpacing: "-0.02em" }}>{value}</div>
-      {sub && <div className="kpi-sub" style={{ fontSize: 11, color: "#334155", marginTop: 4 }}>{sub}</div>}
+      {sub && <div className="kpi-sub" style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>{sub}</div>}
     </div>
   )
 }
@@ -914,9 +923,27 @@ function TabIcon({ id, size = 20 }) {
   }
 }
 
+function ThemeIcon({ theme, size = 18 }) {
+  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" }
+  if (theme === "dark") return (
+    <svg {...p}>
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+  )
+  return (
+    <svg {...p}>
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+  )
+}
+
 function Empty({ text, icon }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 0", color: "#334155" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 0", color: "var(--muted)" }}>
       <div style={{ fontSize: 40, marginBottom: 12 }}>{icon}</div>
       <div style={{ fontSize: 14 }}>{text}</div>
     </div>
