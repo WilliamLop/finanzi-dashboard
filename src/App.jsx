@@ -796,12 +796,12 @@ export default function App() {
                 <div className="section-title">Límite por categoría</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {CATEGORIES.map((cat, ci) => (
-                    <div key={cat} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 8, background: `${COLORS[ci]}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>{CAT_ICONS[ci]}</div>
-                      <span style={{ flex: 1, fontSize: 14, color: "#94A3B8" }}>{cat}</span>
+                    <div key={cat} className="budget-cat-row">
+                      <div style={{ width: 32, height: 32, borderRadius: 8, background: `${COLORS[ci]}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>{CAT_ICONS[ci]}</div>
+                      <span className="budget-cat-label">{cat}</span>
                       <input type="number" placeholder="Sin límite" value={budget[CAT_FIELD[cat]] || ""}
                         onChange={e => updateBudget(CAT_FIELD[cat], e.target.value)}
-                        style={{ ...S.inp, width: 180, textAlign: "right" }} />
+                        className="budget-cat-input" style={{ ...S.inp, textAlign: "right" }} />
                     </div>
                   ))}
                 </div>
