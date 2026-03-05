@@ -75,15 +75,15 @@ export default function App() {
     setIncomes(data || [])
   }, [month, year])
 
-  const loadSources = async () => {
+  const loadSources = useCallback(async () => {
     const { data } = await supabase.from("sources").select("*").order("name")
     setSources(data || [])
-  }
+  }, [])
 
-  const loadDebts = async () => {
+  const loadDebts = useCallback(async () => {
     const { data } = await supabase.from("debts").select("*").order("name")
     setDebts(data || [])
-  }
+  }, [])
 
   const loadBudget = useCallback(async () => {
     const { data } = await supabase.from("budgets").select("*")
@@ -109,7 +109,19 @@ export default function App() {
     setHistData(hist)
   }, [month, year])
 
-  useEffect(() => { loadSources(); loadDebts() }, [])
+  useEffect(() => { loadSources(); loadDebts() }, [loadSources, loadDebts])
+
+  // Realtime: auto-refresh when data changes (from Telegram bot or other clients)
+  useEffect(() => {
+    const channel = supabase
+      .channel("db-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "expenses" }, () => { loadExpenses(); loadHistorial() })
+      .on("postgres_changes", { event: "*", schema: "public", table: "incomes" }, () => { loadIncomes(); loadHistorial() })
+      .on("postgres_changes", { event: "*", schema: "public", table: "debts" }, () => loadDebts())
+      .on("postgres_changes", { event: "*", schema: "public", table: "sources" }, () => loadSources())
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [loadExpenses, loadIncomes, loadDebts, loadSources, loadHistorial])
 
   useEffect(() => {
     setLoading(true)
@@ -449,7 +461,7 @@ export default function App() {
                     <div>
                       <div style={S.label}>CATEGORÍA</div>
                       <select className="inp" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={S.inp}>
-                        {CATEGORIES.map((c, i) => <option key={c}>{CAT_ICONS[i]} {c}</option>)}
+                        {CATEGORIES.map((c, i) => <option key={c} value={c}>{CAT_ICONS[i]} {c}</option>)}
                       </select>
                     </div>
                     <div>
